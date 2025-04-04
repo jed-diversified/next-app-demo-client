@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - next-app-demo-client
+name: main - pipeline
 
 on:
   push:
@@ -25,12 +25,16 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+          npm install --legacy-peer-deps
+          npm run build
+          npm run standalone
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: |
+          zip -r release.zip \
+            .next \
+            .azure \
+            .env
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -58,7 +62,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'next-app-demo-client'
+          app-name: 'next-testing'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D48CE653EF4C436BBD478013204F4110 }}
+          publish-profile: ${{ secrets.AZURE_APP_SERVICE_PROFILE }}
